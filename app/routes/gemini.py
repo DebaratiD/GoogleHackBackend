@@ -7,7 +7,7 @@ import json
 
 load_dotenv()
 
-googleKEY = "AIzaSyAFD_COHQDlvTsK5UBPKVDTFuS58Go_e3Q"
+googleKEY = os.getenv("GEMINI_KEY")
 
 router = APIRouter(
        prefix="/qapi",
