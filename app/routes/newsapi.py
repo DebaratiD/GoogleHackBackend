@@ -4,7 +4,10 @@ from app.models import NewsModel
 from dotenv import load_dotenv, find_dotenv
 import requests
 
-isAvlb = load_dotenv(find_dotenv())
+NEWS_TOKEN = os.getenv('newsToken')
+GEMINI_KEY = os.getenv('GEMINI_KEY')
+
+isAvlb = NEWS_TOKEN is not None and GEMINI_KEY is not None
 
 router = APIRouter(
     prefix="/news",
@@ -26,16 +29,16 @@ def create_newsModel(i)->NewsModel:
 
 @router.get("/home")
 async def getAllSources():
-    if(os.getenv("newsToken"))==None or isAvlb==False:
+    if isAvlb==False:
         raise HTTPException(500,"News Token could not be loaded")
-    response = requests.get(url=f'https://newsapi.org/v2/top-headlines/sources?apiKey={os.getenv("newsToken")}')
+    response = requests.get(url=f'https://newsapi.org/v2/top-headlines/sources?apiKey={NEWS_TOKEN}')
     data = response.json()
     return data['sources']
 
 # Example query would be like: localhost:8000/news/news_query/?q=india
 @router.get("/news_query/")
 async def getQueryNews(q="", source="", page=1, pageSize=100):
-    if(os.getenv("newsToken"))==None or isAvlb==False:
+    if isAvlb==False:
         raise HTTPException(500,"News Token could not be loaded")
     
     params=[]
@@ -45,7 +48,7 @@ async def getQueryNews(q="", source="", page=1, pageSize=100):
         params.append(f'q={q}')
     params.append(f'page={page}')
     params.append(f'pageSize={pageSize}')
-    params.append(f'apiKey={os.getenv("newsToken")}')
+    params.append(f'apiKey={NEWS_TOKEN}')
 
     params = '&'.join(params)
 
