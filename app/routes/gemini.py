@@ -8,6 +8,8 @@ import json
 load_dotenv()
 
 googleKEY = os.getenv("GEMINI_KEY")
+genai.configure(api_key=googleKEY)
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 router = APIRouter(
        prefix="/qapi",
@@ -18,8 +20,6 @@ router = APIRouter(
 
 @router.post("/")
 def AskGemini(req:Question):
-    genai.configure(api_key=googleKEY)
-    model = genai.GenerativeModel('gemini-pro')
     if len(req.ques)=="":
         return {"message":"Please enter a question"}
     response = model.generate_content(req.ques)
@@ -27,18 +27,16 @@ def AskGemini(req:Question):
          response.text
          return response.text
     except Exception as e:
-         print(f'{type(e).__name__}: {e}')
+         return {"error": f"Error: {type(e).__name__} - {str(e)}"}
 
 @router.post("/getstory")
 def getStory(req:Question):
-    genai.configure(api_key=googleKEY)
-    model = genai.GenerativeModel('gemini-pro')
     if len(req.ques)=="":
         return {"message":"No content found"}
-    q = f"Given the following content, generate a summarised version in a max of 25 lines as you would explain to a 10 year old child: \n {req.ques}"
+    q = f"Given the following content, generate a summarised version in a max of 25 lines as you would explain to a {10} year old child. Do not add any bullet points, but no paragraph should have more than 2 lines. For any content that is unsafe to read for children, make it safe so that they can get an idea on what is the context: \n {req.ques}"
     response = model.generate_content(q)
     try:
          response.text
          return response.text
     except Exception as e:
-         print(f'{type(e).__name__}: {e}')
+         return {"error": f"Error: {type(e).__name__} - {str(e)}"}

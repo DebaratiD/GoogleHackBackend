@@ -7,7 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 #load_dotenv(dotenv_path=env_path)
 
 origins = [
-    'https://google-frontend-gilt.vercel.app'
+    'https://google-frontend-gilt.vercel.app',
+    'http://localhost:3000'
 ]
 
 app = FastAPI()

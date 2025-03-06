@@ -1,12 +1,10 @@
 import os
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.models import NewsModel
 from dotenv import load_dotenv, find_dotenv
 import requests
 
 isAvlb = load_dotenv(find_dotenv())
-if isAvlb==False:
-    print("Could not load tokens")
 
 router = APIRouter(
     prefix="/news",
@@ -28,8 +26,8 @@ def create_newsModel(i)->NewsModel:
 
 @router.get("/home")
 async def getAllSources():
-    if(os.getenv("newsToken"))==None:
-        return {"error":"Could not load token"}
+    if(os.getenv("newsToken"))==None or isAvlb==False:
+        raise HTTPException(500,"News Token could not be loaded")
     response = requests.get(url=f'https://newsapi.org/v2/top-headlines/sources?apiKey={os.getenv("newsToken")}')
     data = response.json()
     return data['sources']
@@ -37,8 +35,8 @@ async def getAllSources():
 # Example query would be like: localhost:8000/news/news_query/?q=india
 @router.get("/news_query/")
 async def getQueryNews(q="", source="", page=1, pageSize=100):
-    if(os.getenv("newsToken"))==None:
-        return {"error":"Could not load token"}
+    if(os.getenv("newsToken"))==None or isAvlb==False:
+        raise HTTPException(500,"News Token could not be loaded")
     
     params=[]
     if len(source)!=0:
