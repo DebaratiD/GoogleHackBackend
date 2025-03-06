@@ -29,7 +29,7 @@ def AskGemini(req:Question):
     except Exception as e:
          print(f'{type(e).__name__}: {e}')
 
-@router.post("/getstory/")
+@router.post("/getstory")
 def getStory(req:Question):
     genai.configure(api_key=googleKEY)
     model = genai.GenerativeModel('gemini-pro')
